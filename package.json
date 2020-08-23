@@ -1,0 +1,26 @@
+{
+  "name": "hk51",
+  "version": "1.0.0",
+  "description": "Bot that will pipeline Tweets to a Discord server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "bot",
+    "discord",
+    "twitter",
+    "tweets"
+  ],
+  "author": "Valentin Orban",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^12.3.1",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
