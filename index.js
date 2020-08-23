@@ -20,6 +20,7 @@ client.on('ready', async () => {
 
     let channel = await (await client.guilds.fetch(process.env.DISCORD_SERVER)).channels.resolve(process.env.DISCORD_CHANNEL)
     channel.send(process.env.DISCORD_UP_MESSAGE)
+    channel.send(process.env.DISCORD_UP_MESSAGE_2)
 
     setInterval(async () => {
         tweets = await readTweets(LAST_DATE).catch(console.log)
