@@ -1,0 +1,3 @@
+dotenv
+tweepy
+GetOldTweets3
