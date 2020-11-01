@@ -1,3 +1,4 @@
-python-dotenv
 tweepy
-GetOldTweets3
+pymongo
+discord.py
+timeloop

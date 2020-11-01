@@ -1,2 +1,5 @@
 *.env*
 !*.env.example
+docker-compose.override.yml
+src/__pycache__
+.vscode
