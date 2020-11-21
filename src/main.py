@@ -20,6 +20,8 @@ _UP_MSG = 'Announcement: this unit has been sent to provide news \
 and liquidate meatbags. Fortunately, this unit is currently out of news.\n\
 Declaration: Remember, nobody is born cool, except, of course, \
 my maker <@{0}>'.format(_ADMIN)
+if getenv('APP_ENV') == 'dev':
+    _UP_MSG = '[DEV]' + _UP_MSG
 _HELP_MSG = 'Declaration: let me walk you through my functions, \
 helpless meatbag. Do not forget to tag me.\n\
 - help: if you do not figure this out, you should be terminated.\n\
@@ -29,8 +31,6 @@ crossposted into #general\n\
 - serve <@member>: I will now serve the mentionned member as well.\n\
 - unserve <@member>: I will terminate the servitude contract with this meatbag.\
 - ls-f: I will list all currently targeted tweet accounts.\
-- ls-t: I will list all the tweets synced so far. Possibly quite huge list.\
-- ls-lf: I will list the latest synced tweet per account.\
 - ls-a: I will list all currently served masters and mistresses'
 _FOLLOW_MSG = 'Declaration: Target acquired. http://www.twitter.com/{}'
 _UNFOLLOW_MSG = 'Declaration: Target lost ({}).'
@@ -60,18 +60,15 @@ def parse_order(message: discord.Message):
         return _HELP_MSG
 
     if msg[0] == 'ls-f':
-        return '\n'.join(['`@{}`'.format(f['account']) for f in db.list_follows()])
+        return '\n'.join(['`@{} - synced: {}`'.format(f['account'], f['synced_at'] if 'synced_at' in f else 'never') for f in db.list_follows()])
 
     if msg[0] == 'ls-a':
         return '\n'.join(['<@{}>'
                           .format(a['discord_id']) for a in db.list_admins()])
 
-    if msg[0] == 'ls-t':
-        return '\n'.join(['`@{} - {} ({})`'
-                          .format(t['author'], t['twitter_id'], t['created_at']) for t in db.list_tweets()])
-
-    if msg[0] == 'ls-lt':
-        return '\n'.join(['`{}`'.format(f) for f in db.latest_tweets()])
+    if msg[0] == 'fetch':
+        client.dispatch('browse')
+        return 'Fetching...'
 
     if msg[0] == 'follow' and len(msg) == 2:
         if not db.find_follow(msg[1]):
@@ -97,11 +94,12 @@ def parse_order(message: discord.Message):
 
 @client.event
 async def on_browse():
-    twitter = Twitter(db.list_follows(), db.latest_tweets())
-    tweets = twitter.fetch()
+    twitter = Twitter()
+    tweets = twitter.fetch(db.list_follows())
 
     for tweet in tweets:
-        db.store_tweet(tweet)
+        # should store here
+        db.update_follow(tweet['author'], tweet['synced_at'])
         await channel.send('https://twitter.com/{}/status/{}'
                            .format(tweet['author'], tweet['twitter_id']))
 
@@ -109,6 +107,7 @@ async def on_browse():
 @client.event
 async def on_ready():
     global channel
+    print('server: {}, channel: {}'.format(_SERVER, _CHANNEL))
     channel = client.get_guild(_SERVER).get_channel(_CHANNEL)
     await channel.send(_UP_MSG)
 

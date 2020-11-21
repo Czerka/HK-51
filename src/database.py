@@ -13,26 +13,16 @@ class Database():
         self.__client = MongoClient(self.__db_host, 27017)
         self.__db = self.__client[self.__db_name]
 
-        self.tweets = self.__db['tweets']
         self.follows = self.__db['follows']
         self.admins = self.__db['admins']
 
-    def store_tweet(self, tweet: dict):
-        return self.tweets.insert_one(tweet).inserted_id
-
-    def list_tweets(self):
-        return self.tweets.find()
-
-    def latest_tweets(self):
-        return self.tweets.aggregate([{
-            '$group': {
-                '_id': '$author',
-                'created_at': {'$max': '$created_at'}
-            }
-        }])
-
     def store_follow(self, account: str):
         return self.follows.insert_one({'account': account}).inserted_id
+
+    def update_follow(self, account: str, synced_at: datetime):
+        self.follows.update_one({'account': account}, {'$set': {
+            'synced_at': synced_at
+        }})
 
     def delete_follow(self, account: str):
         self.follows.delete_many({'account': account})
