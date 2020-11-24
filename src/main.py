@@ -1,9 +1,12 @@
-from database import Database
+from database.database import Database
 from os import getenv
-from twitter import Twitter
+from twitter.twitter import Twitter
 from timeloop import Timeloop
 from datetime import timedelta
 import discord
+import shlex
+from commands.command_parser import parse
+
 
 _TOKEN = getenv('DISCORD_TOKEN')
 _SERVER = int(getenv('DISCORD_SERVER'))
