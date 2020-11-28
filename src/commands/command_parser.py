@@ -1,18 +1,50 @@
 import argparse
 import commands.ls as ls
+import shlex
+import sys
+import io
+
+
+class CustomParser(argparse.ArgumentParser):
+    def exit(self):
+        # this is an override
+        raise SyntaxError(self.get_help_string())
+
+    def get_help_string(self):
+        stream = io.StringIO('')
+        self.print_help(stream)
+        return stream.getvalue()
+
+    def error(self, message):
+        # this is an override
+        response = '{}: error: {}\n'.format(self.prog, message)
+        raise SyntaxError(response + self.get_help_string())
 
 
 def __init_parser():
-    parser = argparse.ArgumentParser(
+    parser = CustomParser(
         prog='HK51',
-        description='Professional Meatbag Hunter'
+        description='Professional Meatbag Hunter',
+        exit_on_error=False
     )
     subparsers = parser.add_subparsers()
+    # register commands
     ls.register(subparsers)
+
     return parser
 
 
 def parse(command: str):
+    command = shlex.split(command)
     parser = __init_parser()
-    args = parser.parse_args(command)
-    return args.func(args)
+    try:
+        args = parser.parse_args(command)
+        if 'func' in args:
+            return args.func(args)
+        return parser.get_help_string()
+    except argparse.ArgumentError as error:
+        return parser.get_help_string()
+    except SyntaxError as error:
+        return error.msg
+    except Exception as error:
+        return repr(error)
