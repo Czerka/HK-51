@@ -22,7 +22,7 @@ def register(subparsers: argparse._SubParsersAction) -> None:
     follow_group.add_argument(
         '-l', '--list',
         action='store_true',
-        help='list the current users of HK'
+        help='display HK\'s current watch list'
     )
 
 
