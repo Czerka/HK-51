@@ -16,14 +16,12 @@ class Twitter():
         self.api = tweepy.API(self.__auth)
 
     def fetch(self, follows: list):
-        # date = datetime.strptime(ARGS[1], '%Y-%m-%d %H:%M:%S')
-
         array = []
         for follow in follows:
             if 'synced_at' in follow:
                 date = follow['synced_at']
             else:
-                date = datetime.now() - timedelta(days=1)
+                date = datetime.now() - timedelta(minutes=15)
 
             user = self.api.get_user(follow['account'])
             for item in sorted(user.timeline(), key=lambda i: i.created_at):
