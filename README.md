@@ -5,9 +5,68 @@ a European SWTOR guild, managing events, and sharing news regarding the game.
 
 ## Features
 
+- Users management
+- Follows management
 - Welcome message
 - Tweet sharing
 - Event scheduling
+
+### Command parsing
+
+Usually, you issue commands to bots by starting the message with a `.` or a `!`.
+I don't think it is a good idea, especially in modern times where several bots usually
+run under the same Discord server.
+
+You can issue commands to HK by tagging it. `@HK-51 [...]`.
+
+Regarding the commands themselves, I decided to follow UNIX style commands, options and arguments.
+
+```
+usage: HK51 [-h] {user,follow} ...
+
+Professional Meatbag Hunter
+
+positional arguments:
+  {user,follow}
+    user         manage users
+    follow       manage follows
+
+optional arguments:
+  -h, --help     show this help message and exit
+```
+
+### Users management
+
+HK keeps track of who is allowed to issue commands to it.
+```
+usage: HK51 user [-h] (-a ADD | -r REMOVE | -l)
+
+Manage users. A user is a Discord user allowed to issue commands
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a ADD, --add ADD     set the tagged user as a user of HK
+  -r REMOVE, --remove REMOVE
+                        remove the tagged user from HK users
+  -l, --list            list the current users of HK
+```
+
+### Follows management
+
+HK keeps track of given Twitter accounts, and will look for new tweets.
+```
+usage: HK51 follow [-h] (-a ADD | -r REMOVE | -l)
+
+Manage follows. A follow is represented as a Twitter account, whose tweets
+will be shared.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a ADD, --add ADD     add the given twitter account to HK's watch list
+  -r REMOVE, --remove REMOVE
+                        remove the given twitter account from HK's watch list
+  -l, --list            list the current watch list
+```
 
 ### Welcome message
 
