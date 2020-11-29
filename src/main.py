@@ -55,8 +55,8 @@ async def on_message(message: discord.Message):
     if not any(_HK51 == m.id for m in message.mentions):
         return
 
-    admins = [a['discord_id'] for a in DB['admins'].find()]
-    if author.id != _ADMIN and author.id not in admins:
+    users = [u['discord_id'] for u in DB['users'].find()]
+    if author.id != _ADMIN and author.id not in users:
         return
 
     msg = ' '.join(message.content.split(' ')[1:])
