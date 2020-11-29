@@ -1,7 +1,7 @@
 import argparse
-import commands.ls as ls
+import commands.user as user
+import commands.follow as follow
 import shlex
-import sys
 import io
 
 
@@ -29,7 +29,8 @@ def __init_parser():
     )
     subparsers = parser.add_subparsers()
     # register commands
-    ls.register(subparsers)
+    user.register(subparsers)
+    follow.register(subparsers)
 
     return parser
 
@@ -41,10 +42,14 @@ def parse(command: str):
         args = parser.parse_args(command)
         if 'func' in args:
             return args.func(args)
-        return parser.get_help_string()
+        return wrap(parser.get_help_string())
     except argparse.ArgumentError as error:
-        return parser.get_help_string()
+        return wrap(parser.get_help_string())
     except SyntaxError as error:
-        return error.msg
+        return wrap(error.msg)
     except Exception as error:
-        return repr(error)
+        return wrap(repr(error))
+
+
+def wrap(text: str, wrapper: str = '```'):
+    return wrapper + text + wrapper

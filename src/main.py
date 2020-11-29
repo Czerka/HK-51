@@ -1,11 +1,10 @@
-from database.database import DB
+from database import DB
 from os import getenv
 import discord
-import shlex
 from timeloop import Timeloop
 from datetime import timedelta
 
-from twitter.twitter import Twitter
+from twitter import Twitter
 from commands.command_parser import parse
 
 
@@ -15,23 +14,9 @@ _CHANNEL = int(getenv('DISCORD_CHANNEL'))
 _ADMIN = int(getenv('DISCORD_ADMIN'))
 _HK51 = int(getenv('DISCORD_HK51'))
 
-_NO_ORDER_GIVEN = 'Threat: next time you bother me, I will reduce your meatbag \
-life to ashes.\nDeclaration: added to order 66 list.'
-_ORDER_NOT_FOUND = 'Sad: Data corrupted.\n\
-Declaration: Cannot parse order.\n\
-Demand: please learn to write.'
-_FOLLOW_MSG = 'Declaration: Target acquired. http://www.twitter.com/{}'
-_UNFOLLOW_MSG = 'Declaration: Target lost ({}).'
-_SERVE_MSG = 'Declaration: {} holds the high ground over me, as well.'
-_UNSERVE_MSG = 'Declaration: {} underestimated my power.'
-
 client: discord.Client = discord.Client()
 tl = Timeloop()
 channel = None
-
-
-def wrap(text: str, wrapper: str = '```'):
-    return wrapper + text + wrapper
 
 
 @tl.job(interval=timedelta(minutes=15))
@@ -59,7 +44,7 @@ async def on_ready():
     global channel
     channel = client.get_guild(_SERVER).get_channel(_CHANNEL)
     msg = parse('-h')
-    await channel.send(wrap(msg))
+    await channel.send(msg)
 
 
 @client.event
@@ -76,7 +61,7 @@ async def on_message(message: discord.Message):
 
     msg = ' '.join(message.content.split(' ')[1:])
     result = parse(msg)
-    await chan.send(wrap(result))
+    await chan.send(result)
 
 tl.start()
 client.run(_TOKEN)
