@@ -70,7 +70,7 @@ optional arguments:
 
 ### Welcome message
 
-Currently not configurable, the welcome message is sent to any newcomer to the Discord server.
+The welcome message is sent to any newcomer to the Discord server.
 
 ### Tweet sharing
 

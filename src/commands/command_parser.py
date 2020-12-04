@@ -1,6 +1,7 @@
 import argparse
 import commands.user as user
 import commands.follow as follow
+import commands.welcome as welcome
 import shlex
 import io
 
@@ -23,7 +24,7 @@ class CustomParser(argparse.ArgumentParser):
 
 def __init_parser():
     parser = CustomParser(
-        prog='HK51',
+        prog='@HK-51',
         description='Professional Meatbag Hunter',
         exit_on_error=False
     )
@@ -31,6 +32,7 @@ def __init_parser():
     # register commands
     user.register(subparsers)
     follow.register(subparsers)
+    welcome.register(subparsers)
 
     return parser
 
