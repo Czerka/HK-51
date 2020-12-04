@@ -32,7 +32,9 @@ def __user(args) -> str:
         return __add(args.add)
     if args.remove is not None:
         return __remove(args.remove)
-    return ''
+    raise Exception(
+        'No behavioural function found for : {}'.format(repr(args))
+    )
 
 
 def __list() -> str:

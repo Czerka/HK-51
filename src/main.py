@@ -1,6 +1,7 @@
 from database import DB
 from os import getenv
 import discord
+from discord.ext.commands import Bot
 from timeloop import Timeloop
 from datetime import timedelta
 
@@ -14,17 +15,18 @@ _CHANNEL = int(getenv('DISCORD_CHANNEL'))
 _ADMIN = int(getenv('DISCORD_ADMIN'))
 _HK51 = int(getenv('DISCORD_HK51'))
 
-client: discord.Client = discord.Client()
+intents = discord.Intents.all()
+client: discord.Client = discord.Client(intents=intents)
 tl = Timeloop()
 channel = None
 
 
-@tl.job(interval=timedelta(minutes=15))
+@ tl.job(interval=timedelta(minutes=15))
 def browse_twitter():
     client.dispatch('browse')
 
 
-@client.event
+@ client.event
 async def on_browse():
     twitter = Twitter()
     tweets = twitter.fetch(DB['follows'].find())
@@ -39,7 +41,7 @@ async def on_browse():
                            .format(tweet['author'], tweet['twitter_id']))
 
 
-@client.event
+@ client.event
 async def on_ready():
     global channel
     channel = client.get_guild(_SERVER).get_channel(_CHANNEL)
@@ -47,7 +49,16 @@ async def on_ready():
     await channel.send(msg)
 
 
-@client.event
+@ client.event
+async def on_member_join(member: discord.Member):
+    msg = DB['settings'].find_one({'key': 'welcome_message'})
+    if msg is None:
+        return
+
+    await channel.send('{} {}'.format(member.mention(), msg['value']))
+
+
+@ client.event
 async def on_message(message: discord.Message):
     author: discord.User = message.author._user
     chan: discord.channel.TextChannel = message.channel
@@ -57,6 +68,8 @@ async def on_message(message: discord.Message):
 
     users = [u['discord_id'] for u in DB['users'].find()]
     if author.id != _ADMIN and author.id not in users:
+        return
+    if author.is_bot:
         return
 
     msg = ' '.join(message.content.split(' ')[1:])
